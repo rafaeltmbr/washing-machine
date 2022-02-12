@@ -2,7 +2,7 @@
 
 WM::WMInputsManager::WMInputsManager()
 {
-  this->pinMapping = {
+  pinMapping = {
     start : WM_INPUTS_DEFAULT_START_PIN,
     tamper : WM_INPUTS_DEFAULT_TAMPER_PIN,
     pressure : WM_INPUTS_DEFAULT_PRESSURE_PIN,
@@ -22,25 +22,25 @@ WM::WMInputsManager::WMInputsManager(const WMInputsPinMapping &pinMapping)
 WM::WMInputs WM::WMInputsManager::read(void) const
 {
   return {
-    start : debounce(this->pinMapping.start),
-    tamper : debounce(this->pinMapping.tamper),
-    pressure : debounce(this->pinMapping.pressure),
-    skip : debounce(this->pinMapping.skip),
-    agitate2Time : analogRead(this->pinMapping.agitate2Time),
-    centrifugeTime : analogRead(this->pinMapping.centrifugeTime),
-    agitate3Time : analogRead(this->pinMapping.agitate3Time),
-    centrifuge2Time : analogRead(this->pinMapping.centrifuge2Time),
+    start : debounce(pinMapping.start),
+    tamper : debounce(pinMapping.tamper),
+    pressure : debounce(pinMapping.pressure),
+    skip : debounce(pinMapping.skip),
+    agitate2Time : analogRead(pinMapping.agitate2Time),
+    centrifugeTime : analogRead(pinMapping.centrifugeTime),
+    agitate3Time : analogRead(pinMapping.agitate3Time),
+    centrifuge2Time : analogRead(pinMapping.centrifuge2Time),
   };
 }
 
 void WM::WMInputsManager::ajustPinMode(void) const
 {
-  pinMode(this->pinMapping.start, INPUT);
-  pinMode(this->pinMapping.tamper, INPUT);
-  pinMode(this->pinMapping.pressure, INPUT);
-  pinMode(this->pinMapping.skip, INPUT);
-  pinMode(this->pinMapping.agitate2Time, INPUT);
-  pinMode(this->pinMapping.centrifugeTime, INPUT);
-  pinMode(this->pinMapping.agitate3Time, INPUT);
-  pinMode(this->pinMapping.centrifuge2Time, INPUT);
+  pinMode(pinMapping.start, INPUT);
+  pinMode(pinMapping.tamper, INPUT);
+  pinMode(pinMapping.pressure, INPUT);
+  pinMode(pinMapping.skip, INPUT);
+  pinMode(pinMapping.agitate2Time, INPUT);
+  pinMode(pinMapping.centrifugeTime, INPUT);
+  pinMode(pinMapping.agitate3Time, INPUT);
+  pinMode(pinMapping.centrifuge2Time, INPUT);
 }

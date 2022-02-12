@@ -2,17 +2,20 @@
 #include <ArduinoSTL.h>
 #include "WMController.hpp"
 #include "WMInputsManager.hpp"
+#include "WMOutputsManager.hpp"
 #include "./include/convertWMStepToString.hpp"
 
 #define DELAY 250
 
 WM::WMController controller;
 WM::WMInputsManager inputsManager;
+WM::WMOutputsManager outputsManager;
 
 void setup()
 {
   Serial.begin(115200);
   inputsManager.ajustPinMode();
+  outputsManager.ajustPinMode();
 }
 
 void loop()
@@ -32,14 +35,15 @@ void loop()
   std::cout << "agitate3Time    : " << inputs.agitate3Time << std::endl;
   std::cout << "centrifuge2Time : " << inputs.centrifuge2Time << std::endl;
 
-  auto resp = controller.exec(inputs);
+  auto outputs = controller.exec(inputs);
+  outputsManager.write(outputs);
 
   std::cout << std::endl
             << "  OUTPUTS" << std::endl;
-  std::cout << "Motor      : " << resp.motor << std::endl;
-  std::cout << "Agitate    : " << resp.agitate << std::endl;
-  std::cout << "Centrifuge : " << resp.centrifuge << std::endl;
-  std::cout << "Valve      : " << resp.valve << std::endl;
+  std::cout << "Motor      : " << outputs.motor << std::endl;
+  std::cout << "Agitate    : " << outputs.agitate << std::endl;
+  std::cout << "Centrifuge : " << outputs.centrifuge << std::endl;
+  std::cout << "Valve      : " << outputs.valve << std::endl;
 
   auto stats = controller.stats();
 

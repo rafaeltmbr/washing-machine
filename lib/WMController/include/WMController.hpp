@@ -33,13 +33,14 @@ namespace WM
     WMTime stepTime;
     WMTime intermittentTime;
     WMTime lastStepTime;
+    bool lastSkipState;
     std::map<WM::WMSteps, WM::WMStepAction> stepConditionMapping;
 
     void updateCurrentStepTime(const WMInputs &);
     void updateNextStep(WMStepAction &, const WMInputs &);
-    bool computeOutput(const WMOutputCondition &, const WMInputs &, WMTime) const;
+    bool computeOutput(const WMOutputCondition &, const WMInputs &) const;
     WMOutputs computeOutputs(WMStepAction &, const WMInputs &) const;
-    bool shouldGotoNextStep(WMStepAction &, const WMInputs &) const;
+    bool shouldGotoNextStep(WMStepAction &, const WMInputs &);
 
   public:
     WMController();

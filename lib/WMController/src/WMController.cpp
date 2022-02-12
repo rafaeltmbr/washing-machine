@@ -3,67 +3,67 @@
 
 WM::WMController::WMController()
 {
-  this->currentStep = WMSteps::standby;
-  this->stepTime = 0;
-  this->lastStepTime = millis();
-  this->stepConditionMapping = createStepConditionMapping();
+  currentStep = WMSteps::standby;
+  stepTime = 0;
+  lastStepTime = millis();
+  stepConditionMapping = createStepConditionMapping();
+  lastSkipState = false;
 }
 
 WM::WMController::WMController(const WMControllerConfig &config)
 {
   WM::WMController();
-  this->intermittentTime = config.intermittentTime;
+  intermittentTime = config.intermittentTime;
 }
 
 WM::WMOutputs WM::WMController::exec(const WMInputs &inputs)
 {
-  auto action = this->stepConditionMapping[this->currentStep];
+  auto action = stepConditionMapping[currentStep];
 
-  this->updateCurrentStepTime(inputs);
-  this->updateNextStep(action, inputs);
+  updateCurrentStepTime(inputs);
+  updateNextStep(action, inputs);
 
-  return this->computeOutputs(action, inputs);
+  return computeOutputs(action, inputs);
 }
 
 WM::WMControllerStats WM::WMController::stats(void) const
 {
   return {
-    currentStep : this->currentStep,
-    currentStepTime : this->stepTime
+    currentStep : currentStep,
+    currentStepTime : stepTime
   };
 }
 
 void WM::WMController::updateCurrentStepTime(const WMInputs &inputs)
 {
-  if (!inputs.tamper)
-    this->stepTime += millis() - this->lastStepTime;
+  if (inputs.tamper)
+    stepTime += millis() - lastStepTime;
 
-  this->lastStepTime = millis();
+  lastStepTime = millis();
 }
 
 void WM::WMController::updateNextStep(WMStepAction &action, const WMInputs &inputs)
 {
-  if (this->shouldGotoNextStep(action, inputs))
+  if (shouldGotoNextStep(action, inputs))
   {
-    this->stepTime = 0;
-    this->currentStep = action.nextStep;
+    stepTime = 0;
+    currentStep = action.nextStep;
   }
 }
 
 WM::WMOutputs WM::WMController::computeOutputs(WMStepAction &action, const WMInputs &inputs) const
 {
   return {
-    motor : computeOutput(action.motor, inputs, this->stepTime),
-    agitate : computeOutput(action.agitate, inputs, this->stepTime),
-    centrifuge : computeOutput(action.centrifuge, inputs, this->stepTime),
-    valve : computeOutput(action.valve, inputs, this->stepTime),
+    motor : computeOutput(action.motor, inputs),
+    agitate : computeOutput(action.agitate, inputs),
+    centrifuge : computeOutput(action.centrifuge, inputs),
+    valve : computeOutput(action.valve, inputs),
   };
 }
 
 bool WM::WMController::computeOutput(
     const WMOutputCondition &condition,
-    const WMInputs &inputs,
-    WMTime time) const
+    const WMInputs &inputs) const
 {
   switch (condition)
   {
@@ -79,14 +79,17 @@ bool WM::WMController::computeOutput(
     return inputs.pressure && inputs.tamper;
   case WM::WMOutputCondition::intermittent:
   default:
-    return (time / this->intermittentTime) % 2;
+    return (stepTime / intermittentTime) % 2;
   }
 }
 
-bool WM::WMController::shouldGotoNextStep(WMStepAction &action, const WMInputs &inputs) const
+bool WM::WMController::shouldGotoNextStep(WMStepAction &action, const WMInputs &inputs)
 {
-  if (inputs.skip)
-    return true;
+  if (inputs.skip && !lastSkipState)
+    return (lastSkipState = true);
+
+  if (!inputs.skip)
+    lastSkipState = false;
 
   switch (action.nextStepCondition)
   {
@@ -96,6 +99,6 @@ bool WM::WMController::shouldGotoNextStep(WMStepAction &action, const WMInputs &
     return inputs.start;
   case WMNextStepCondition::time:
   default:
-    return this->stepTime >= action.duration;
+    return stepTime >= action.duration;
   }
 }
