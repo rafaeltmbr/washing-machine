@@ -1,5 +1,5 @@
-#ifndef WMSTEPCONDITION_HPP
-#define WMSTEPCONDITION_HPP
+#ifndef WM_STEPCONDITION_HPP
+#define WM_STEPCONDITION_HPP
 
 #include <cstdint>
 #include "./WMOutputs.hpp"
@@ -30,4 +30,4 @@ namespace WM
   };
 }
 
-#endif // WMSTEPCONDITION_HPP
+#endif // WM_STEPCONDITION_HPP

@@ -1,5 +1,5 @@
-#ifndef WMSTEPS_HPP
-#define WMSTEPS_HPP
+#ifndef WM_STEPS_HPP
+#define WM_STEPS_HPP
 
 namespace WM
 {
@@ -19,4 +19,4 @@ namespace WM
   };
 }
 
-#endif // WMSTEPS_HPP
+#endif // WM_STEPS_HPP

@@ -49,6 +49,8 @@
     "utility": "cpp",
     "valarray": "cpp",
     "vector": "cpp",
-    "cstdint": "cpp"
+    "cstdint": "cpp",
+    "serstream": "cpp",
+    "cinttypes": "cpp"
   }
 }

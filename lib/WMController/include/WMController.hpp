@@ -1,5 +1,5 @@
-#ifndef WMCONTROLLER_HPP
-#define WMCONTROLLER_HPP
+#ifndef WM_CONTROLLER_HPP
+#define WM_CONTROLLER_HPP
 
 #include <Arduino.h>
 #include <map>
@@ -19,6 +19,13 @@ namespace WM
     WMTime intermittentTime = WM_DEFAULT_INTERMITTENT_TIME;
   };
 
+  class WMControllerStats
+  {
+  public:
+    WMSteps currentStep;
+    WMTime currentStepTime;
+  };
+
   class WMController
   {
   private:
@@ -28,17 +35,18 @@ namespace WM
     WMTime lastStepTime;
     std::map<WM::WMSteps, WM::WMStepAction> stepConditionMapping;
 
-    void updateCurrentStepTime(WMInputs);
-    void updateNextStep(WMStepAction, WMInputs);
-    bool computeOutput(WMOutputCondition, WMInputs, WMTime);
-    WMOutputs computeOutputs(WMStepAction, WMInputs);
-    bool gotoNextStep(WMStepAction, WMInputs);
+    void updateCurrentStepTime(const WMInputs &);
+    void updateNextStep(WMStepAction &, const WMInputs &);
+    bool computeOutput(const WMOutputCondition &, const WMInputs &, WMTime) const;
+    WMOutputs computeOutputs(WMStepAction &, const WMInputs &) const;
+    bool shouldGotoNextStep(WMStepAction &, const WMInputs &) const;
 
   public:
     WMController();
-    WMController(WMControllerConfig &);
-    WMOutputs exec(WMInputs);
+    WMController(const WMControllerConfig &);
+    WMOutputs exec(const WMInputs &);
+    WMControllerStats stats(void) const;
   };
 }
 
-#endif // WMCONTROLLER_HPP
+#endif // WM_CONTROLLER_HPP

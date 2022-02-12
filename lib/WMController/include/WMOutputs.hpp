@@ -1,5 +1,5 @@
-#ifndef WMOUTPUTS_HPP
-#define WMOUTPUTS_HPP
+#ifndef WM_OUTPUTS_HPP
+#define WM_OUTPUTS_HPP
 
 #include "./WMSteps.hpp"
 
@@ -27,4 +27,4 @@ namespace WM
 
 }
 
-#endif // WMOUTPUTS_HPP
+#endif // WM_OUTPUTS_HPP

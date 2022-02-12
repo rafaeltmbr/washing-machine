@@ -9,13 +9,13 @@ WM::WMController::WMController()
   this->stepConditionMapping = createStepConditionMapping();
 }
 
-WM::WMController::WMController(WMControllerConfig &config)
+WM::WMController::WMController(const WMControllerConfig &config)
 {
   WM::WMController();
   this->intermittentTime = config.intermittentTime;
 }
 
-WM::WMOutputs WM::WMController::exec(WMInputs inputs)
+WM::WMOutputs WM::WMController::exec(const WMInputs &inputs)
 {
   auto action = this->stepConditionMapping[this->currentStep];
 
@@ -25,7 +25,15 @@ WM::WMOutputs WM::WMController::exec(WMInputs inputs)
   return this->computeOutputs(action, inputs);
 }
 
-void WM::WMController::updateCurrentStepTime(WMInputs inputs)
+WM::WMControllerStats WM::WMController::stats(void) const
+{
+  return {
+    currentStep : this->currentStep,
+    currentStepTime : this->stepTime
+  };
+}
+
+void WM::WMController::updateCurrentStepTime(const WMInputs &inputs)
 {
   if (!inputs.tamper)
     this->stepTime += millis() - this->lastStepTime;
@@ -33,16 +41,16 @@ void WM::WMController::updateCurrentStepTime(WMInputs inputs)
   this->lastStepTime = millis();
 }
 
-void WM::WMController::updateNextStep(WMStepAction action, WMInputs inputs)
+void WM::WMController::updateNextStep(WMStepAction &action, const WMInputs &inputs)
 {
-  if (this->gotoNextStep(action, inputs))
+  if (this->shouldGotoNextStep(action, inputs))
   {
     this->stepTime = 0;
     this->currentStep = action.nextStep;
   }
 }
 
-WM::WMOutputs WM::WMController::computeOutputs(WMStepAction action, WMInputs inputs)
+WM::WMOutputs WM::WMController::computeOutputs(WMStepAction &action, const WMInputs &inputs) const
 {
   return {
     motor : computeOutput(action.motor, inputs, this->stepTime),
@@ -53,9 +61,9 @@ WM::WMOutputs WM::WMController::computeOutputs(WMStepAction action, WMInputs inp
 }
 
 bool WM::WMController::computeOutput(
-    WMOutputCondition condition,
-    WMInputs inputs,
-    WMTime time)
+    const WMOutputCondition &condition,
+    const WMInputs &inputs,
+    WMTime time) const
 {
   switch (condition)
   {
@@ -75,8 +83,11 @@ bool WM::WMController::computeOutput(
   }
 }
 
-bool WM::WMController::gotoNextStep(WMStepAction action, WMInputs inputs)
+bool WM::WMController::shouldGotoNextStep(WMStepAction &action, const WMInputs &inputs) const
 {
+  if (inputs.skip)
+    return true;
+
   switch (action.nextStepCondition)
   {
   case WMNextStepCondition::pressure:

@@ -1,9 +1,9 @@
-#ifndef WMINPUTS_HPP
-#define WMINPUTS_HPP
+#ifndef WM_INPUTS_HPP
+#define WM_INPUTS_HPP
 
 namespace WM
 {
-  typedef short unsigned AnalogInput;
+  typedef int AnalogInput;
 
   class WMInputs
   {
@@ -11,6 +11,7 @@ namespace WM
     bool start;
     bool tamper;
     bool pressure;
+    bool skip;
     AnalogInput agitate2Time;
     AnalogInput centrifugeTime;
     AnalogInput agitate3Time;
@@ -18,4 +19,4 @@ namespace WM
   };
 }
 
-#endif // WMINPUTS_HPP
+#endif // WM_INPUTS_HPP
